@@ -1,11 +1,11 @@
 ;;; beardbolt.el --- A compiler output viewer -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018-2021 Jay Kamat 2022 João Távora
-;; Author: João Távora <joaotavora@gmail.com>
-;; Version: 0.1.2
+;; Author: João Távora <joaotavora@gmail.com>, 8dcc <8dcc.git@gmail.com>
+;; Version: 0.1.3
 ;; Keywords: compilation, tools
-;; URL: https://github.com/joaotavora/beardbolt
-;; Package-Requires: ((emacs "28.1"))
+;; URL: https://github.com/8dcc/beardbolt
+;; Package-Requires: ((emacs "28.1") (nasm-mode "1.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU Affero General Public License as published by
@@ -37,6 +37,7 @@
 (require 'json)
 (require 'color)
 (require 'pulse)
+(require 'nasm-mode)
 
 ;;; Code:
 (defgroup beardbolt nil
@@ -52,7 +53,7 @@
 (bb--defoption bb-disassemble nil
   "Non-nil to assemble then disassemble an output binary."
   :type 'boolean :safe 'booleanp)
-(bb--defoption bb-asm-format 'att
+(bb--defoption bb-asm-format 'intel
   "Which output assembly format to use.
 Passed directly to compiler or disassembler."
   :type 'string :safe (lambda (v) (or (null v) (symbolp v) (stringp v))))
@@ -765,7 +766,7 @@ With prefix argument, choose from starter files in `bb-starter-files'."
 ;;;###autoload
 (define-minor-mode beardbolt-mode
   "Toggle `beardbolt-mode'.  May be enabled by user in source buffer."
-  :global nil :lighter " ⚡" :keymap bb-mode-map
+  :global nil :lighter " beardbolt" :keymap bb-mode-map
   (cond
    (bb-mode
     (add-hook 'after-change-functions #'bb--after-change nil t)
@@ -774,7 +775,7 @@ With prefix argument, choose from starter files in `bb-starter-files'."
     (remove-hook 'after-change-functions #'bb--after-change t)
     (remove-hook 'post-command-hook #'bb--synch-relation-overlays t))))
 
-(define-derived-mode bb--asm-mode asm-mode "⚡asm ⚡"
+(define-derived-mode bb--asm-mode nasm-mode "beardbolt-asm"
   "Toggle `bearbolt--output-mode', internal mode for asm buffers."
   (add-hook 'kill-buffer-hook #'bb-clear-rainbow-overlays nil t)
   (add-hook 'post-command-hook #'bb--synch-relation-overlays nil t)
