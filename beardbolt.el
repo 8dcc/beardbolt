@@ -82,10 +82,6 @@ Passed directly to compiler or disassembler."
   "Choose less pretty, but potentially more contrasting rainbow colors."
   :type 'boolean :safe 'booleanp)
 
-(defface bb-current-line-face
-  '((t (:weight bold)))
-  "Face to fontify the current line for showing matches.")
-
 (defvar-local bb--asm-buffer nil)
 (defvar-local bb--source-buffer nil)
 (defvar-local bb--compile-spec nil)
@@ -477,14 +473,14 @@ some parts of the buffer and setup a buffer-local value of
                                          (/ i (float total)))
                                       1)
                                  (min (max (cl-second background-hsl)
-                                           0.25)
-                                      0.8)
+                                           0.3)
+                                      0.9)
                                  (min (max (cl-third background-hsl)
                                            0.25)
                                       0.8))
           with muted-hsl = (list (car bright-hsl)
-                                 (/ (cadr bright-hsl) 2.0)
-                                 (caddr bright-hsl))
+                                 (/ (cadr bright-hsl) 1.2)
+                                 (/ (caddr bright-hsl) 1.5))
           with color = (apply #'color-rgb-to-hex (apply #'color-hsl-to-rgb bright-hsl))
           with muted-color = (apply #'color-rgb-to-hex (apply #'color-hsl-to-rgb muted-hsl))
           for (beg . end) in asm-pos-regions
@@ -495,6 +491,7 @@ some parts of the buffer and setup a buffer-local value of
           (overlay-put asm-ov 'face `(:background ,color))
           (overlay-put asm-ov 'beardbolt-rainbow-face `(:background ,color))
           (overlay-put asm-ov 'beardbolt-muted-face `(:background ,muted-color))
+          (overlay-put asm-ov 'beardbolt-current-line-face `(:weight bold :background ,color))
           (overlay-put asm-ov 'beardbolt 'asm)
           collect asm-ov into this-lines-asm-overlays
           finally
@@ -511,6 +508,7 @@ some parts of the buffer and setup a buffer-local value of
                 (overlay-put ov 'face `(:background ,color))
                 (overlay-put ov 'beardbolt-rainbow-face `(:background ,color))
                 (overlay-put ov 'beardbolt-muted-face `(:background ,muted-color))
+                (overlay-put ov 'beardbolt-current-line-face `(:weight bold :background ,color))
                 (overlay-put ov 'beardbolt t)
                 (push ov all-ovs)))))))
      ht)
@@ -709,7 +707,7 @@ With prefix argument, choose from starter files in `bb-starter-files'."
            (setq bb--currently-synched-overlays
                  (cl-sort bb--currently-synched-overlays #'< :key #'overlay-start))
            (dolist (o bb--currently-synched-overlays)
-             (overlay-put o 'face 'bb-current-line-face))
+             (overlay-put o 'face (overlay-get o 'beardbolt-current-line-face)))
            (let* ((other-buffer-overlays
                    (cl-remove (current-buffer)
                               bb--currently-synched-overlays
@@ -728,9 +726,7 @@ With prefix argument, choose from starter files in `bb-starter-files'."
                         (length asm-overlays)
                         (with-current-buffer (overlay-buffer recenter-target)
                           (line-number-at-pos (overlay-start recenter-target)))))
-             (bb--recenter-maybe recenter-target)
-             (pulse-momentary-highlight-overlay recenter-target
-                                                'bb-current-line-face)))
+             (bb--recenter-maybe recenter-target)))
           ((not ov)
            (dolist (o all-ovs)
              (overlay-put o 'face (overlay-get o 'beardbolt-rainbow-face)))
