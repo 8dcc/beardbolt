@@ -83,7 +83,7 @@ Passed directly to compiler or disassembler."
   :type 'boolean :safe 'booleanp)
 
 (defface bb-current-line-face
-  '((t (:weight bold :inherit highlight)))
+  '((t (:weight bold)))
   "Face to fontify the current line for showing matches.")
 
 (defvar-local bb--asm-buffer nil)
