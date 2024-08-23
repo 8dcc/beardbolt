@@ -120,7 +120,7 @@ Used to work around inconsistencies in alternative shells.")
   "The directory which beardbolt is installed to.")
 
 (defvar-local bb-objdump-binary "objdump"
-  "A binary to use for objdumping when using `bb-disassemble'.
+  "A binary to use for objdumping when using `beardbolt-disassemble'.
 Useful if you have multiple objdumpers and want to select between them")
 
 ;;;; Regexes
@@ -640,7 +640,7 @@ determine LANG from `major-mode'."
     (define-key map (kbd "C-c C-c") #'bb-compile)
     (define-key map (kbd "C-c C-d") #'bb-clear-rainbow-overlays)
     map)
-  "Keymap for function `bb-mode'.")
+  "Keymap for function `beardbolt-mode'.")
 
 ;;;;; Starter Definitions
 
@@ -652,7 +652,7 @@ determine LANG from `major-mode'."
 ;;;###autoload
 (defun beardbolt-starter (lang-name)
   "Setup new sandbox file for experiments.
-With prefix argument, choose from starter files in `bb-starter-files'."
+With prefix argument, choose from starter files in `beardbolt-starter-files'."
   (interactive
    (list (if current-prefix-arg
              (completing-read "Language: " bb-starter-files nil t)
@@ -778,7 +778,7 @@ With prefix argument, choose from starter files in `bb-starter-files'."
   (setq truncate-lines t)
   (read-only-mode t)
   (buffer-disable-undo)
-  (local-set-key (kbd "q") 'quit-window))
+  (keymap-local-set (kbd "q") 'quit-window))
 
 (provide 'beardbolt)
 
