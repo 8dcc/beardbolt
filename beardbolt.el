@@ -467,20 +467,20 @@ some parts of the buffer and setup a buffer-local value of
        (when (not (zerop src-line))
          (cl-loop
           with i = (if shuffle
-                       (mod (* 27 (cl-incf idx)) total)
-                     (cl-incf idx))
+                       (+ 0.1 (* (mod (cl-incf idx) 4) 0.25))
+                     (/ (cl-incf idx) (float total)))
           with bright-hsl =(list (mod (+ (cl-first background-hsl)
-                                         (/ i (float total)))
+                                         i)
                                       1)
                                  (min (max (cl-second background-hsl)
-                                           0.3)
-                                      0.9)
+                                           0.30)
+                                      0.90)
                                  (min (max (cl-third background-hsl)
                                            0.25)
-                                      0.8))
+                                      0.75))
           with muted-hsl = (list (car bright-hsl)
-                                 (/ (cadr bright-hsl) 1.2)
-                                 (/ (caddr bright-hsl) 1.5))
+                                 0
+                                 (caddr bright-hsl))
           with color = (apply #'color-rgb-to-hex (apply #'color-hsl-to-rgb bright-hsl))
           with muted-color = (apply #'color-rgb-to-hex (apply #'color-hsl-to-rgb muted-hsl))
           for (beg . end) in asm-pos-regions
