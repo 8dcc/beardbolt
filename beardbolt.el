@@ -212,6 +212,7 @@ Useful if you have multiple objdumpers and want to select between them")
                 (compile (in out) `(,@base-command
                                     "-g1"
                                     "-S" ,(format "-masm=%s" bb-asm-format)
+                                    "-fno-PIE" ; FIXME: See GCC bug #116472
                                     "-o" ,out
                                     ,@(if modified-p
                                           `("-x" ,language "-" "<" ,in)
